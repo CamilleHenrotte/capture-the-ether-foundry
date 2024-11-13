@@ -1,14 +1,66 @@
-# Capture The Ether Foundry (A [RareSkills](http://www.rareskills.io/) fork)
-This project provides a foundry environment to practice the problems on [capturetheether.com/](https://capturetheether.com/). The problems run on a defunct testnet and use an older version of Solidity. This repository doesn't depend on testnets and uses the latest Solidity version. Some problems could not be ported because they rely on vulnerabilities that only existed in older versions of Solidity. Some liberty has been taken where the syntax and other compiler features are no longer compatible.
+## Foundry
 
-## How to play
-Make sure foundry is installed. [instructions](https://book.getfoundry.sh/getting-started/installation)
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-cd to the directory of the problem, then add your solution in the test where the comment says `// Put your solution here`. We've also set up attacking contracts for you. If the tests pass, you were successful. Run the tests with `forge test` (exception for problem 8 below).
+Foundry consists of:
 
-### 8PredictBlockhash:
+-   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+-   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+-   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+-   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-run it with "forge test --fork-url https://1rpc.io/eth -vvvv"
+## Documentation
 
-## Want more problems?
-Check out our [solidity riddles](https://github.com/rareSkills/solidity-riddles). It includes 20 CTFs and counting!
+https://book.getfoundry.sh/
+
+## Usage
+
+### Build
+
+```shell
+$ forge build
+```
+
+### Test
+
+```shell
+$ forge test
+```
+
+### Format
+
+```shell
+$ forge fmt
+```
+
+### Gas Snapshots
+
+```shell
+$ forge snapshot
+```
+
+### Anvil
+
+```shell
+$ anvil
+```
+
+### Deploy
+
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```
