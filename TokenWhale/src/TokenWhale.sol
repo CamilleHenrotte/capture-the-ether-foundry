@@ -40,11 +40,7 @@ contract TokenWhale {
         _transfer(to, value);
     }
 
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 
     function approve(address spender, uint256 value) public {
         allowance[msg.sender][spender] = value;

